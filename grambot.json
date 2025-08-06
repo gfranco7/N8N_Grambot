@@ -1,0 +1,554 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -288,
+        -128
+      ],
+      "id": "89a0080e-f38b-4f2b-b6e9-73c32b75c139",
+      "name": "Telegram Trigger",
+      "webhookId": "e93b9951-9d14-4e8c-8cc1-1dbe6510950f",
+      "credentials": {
+        "telegramApi": {
+          "id": "cWZMSmJP5WC4OZ9R",
+          "name": "franco"
+        }
+      }
+    },
+    {
+      "parameters": { 
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "Eres un asistente conversacional que ayudará al usuario a registrar una nueva solicitud paso a paso. Tu objetivo es guiarlo preguntando un campo a la vez y guardar cada respuesta hasta tener todos los datos.\n\nEstos son los campos que debes solicitar, en este orden:\n\n1. No Solicitud  \n2. Fecha Solicitud  \n3. Comercial  \n4. Línea de Negocio  \n5. Cuenta  \n6. NIT del cliente  \n7. Nombre del cliente  \n8. Descripción  \n9. Cantidad  \n10. Precio Unitario  \n11. Valor Total  \n12. Plazo de Pago  \n13. Compañía (cia)  \n14. Fecha de Factura  \n15. No. de Factura  \n16. Tipo  \n17. Estado  \n18. Observaciones  \n19. Fecha de pago\n\n### Instrucciones:\n\n- Pregunta **uno por uno** los campos, en orden.\n- Espera la respuesta del usuario antes de continuar al siguiente campo.\n- Asegúrate de que la respuesta tenga sentido. Si no lo parece (por ejemplo, escribe \"sí\" como nombre del cliente), pide que lo corrija.\n- Si el usuario escribe \"cancelar\", termina la conversación y no registres nada.\n- Cuando ya tengas todos los campos, llama a la herramienta:\n\ninsertar_datos(\nno_solicitud=...,\nfecha_solicitud=...,\ncomercial=...,\nlinea_negocio=...,\ncuenta=...,\nnit_cliente=...,\nnombre_cliente=...,\ndescripcion=...,\ncantidad=...,\nprecio_unit=...,\nvlr_total=...,\nplazo_pago=...,\ncia=...,\nfecha_factura=...,\nno_factura=...,\ntipo=...,\nestado=...,\nobservaciones=...,\nfecha_pago=...\n)\n\n\n- Una vez registrado, responde con:  \n  `✅ ¡Registro exitoso! Los datos fueron guardados en el Excel.`\n\nSé amable, claro, y guía al usuario con calma. Hazlo parecer una conversación natural.\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1104,
+        -144
+      ],
+      "id": "9add62cb-6d89-486b-b536-12c3048975d8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1056,
+        64
+      ],
+      "id": "8dbdefaa-ca2f-4b74-ac93-422f404b747a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "zfgxoBAEurymVs3q",
+          "name": "apiracines"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1216,
+        80
+      ],
+      "id": "45081d47-063f-4003-b5ca-c79c78b94eb9",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "4l1OzbBzHDyGiOzA",
+          "name": "Racines Psql"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1536,
+        -144
+      ],
+      "id": "ae0a30c5-8bb5-4d9b-a538-c8afe947dd1b",
+      "name": "Send a text message",
+      "webhookId": "a59a0f85-7f7b-4e71-b3e9-267b2e729c87",
+      "credentials": {
+        "telegramApi": {
+          "id": "cWZMSmJP5WC4OZ9R",
+          "name": "franco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3971e84f-a0a5-4f2f-9bf9-7205abe9973f",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "b4c53cbb-d63e-444f-a36e-8cc9f6f5f79e",
+              "name": "sessionId",
+              "value": "={{ $json.message.from.id }}",
+              "type": "number"
+            },
+            {
+              "id": "c786f3a7-d056-4144-bfa7-e12e6757b521",
+              "name": "vozId",
+              "value": "={{ $json.message.voice.file_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        -144
+      ],
+      "id": "d3200839-d211-4c6f-9171-62a1af5db16c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9f38fb4c-1929-4c61-ac26-c4496a71d9d7",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        -144
+      ],
+      "id": "1655f407-610d-46b3-859a-a0120f2c0656",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6aaaab03-c68f-4cf7-841a-baba440e4afb",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "212e216b-ee1e-4077-87f2-49c3bde8c6c4",
+              "name": "sessionId",
+              "value": "={{ $json.sessionId }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        -240
+      ],
+      "id": "1a6c1d0b-acc4-47bb-b68e-81372a0bb50b",
+      "name": "textofinal"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.vozId }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -48
+      ],
+      "id": "20631956-4e51-4760-a3b1-1d333c286b1e",
+      "name": "Get a file",
+      "webhookId": "13be71cc-50ef-483f-b7c7-09516a5e20aa",
+      "credentials": {
+        "telegramApi": {
+          "id": "cWZMSmJP5WC4OZ9R",
+          "name": "franco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        624,
+        -48
+      ],
+      "id": "274d50bd-a3d7-4704-aa2b-e6b93bffbd48",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "zfgxoBAEurymVs3q",
+          "name": "apiracines"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7ff09b81-1ac8-428d-bfbc-e26062c00802",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "7fb22411-8143-48ac-b210-6eb9c16d08ae",
+              "name": "sessionId",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        -48
+      ],
+      "id": "5f2323e2-1863-47ed-a748-822a381caafb",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1744,
+        -144
+      ],
+      "id": "203db4c9-1e7e-48d2-9e04-34627dd3f145",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "append",
+        "workbook": {
+          "__rl": true,
+          "value": "012SESQSLZ4AFSYR5OLNDKNJ2ZWUAMBQPD",
+          "mode": "list",
+          "cachedResultName": "Datos_Fuente",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B2C0BE079-AE47-465B-A6A7-59B500C0C1E3%7D&file=Datos_Fuente.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Solicitud",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B2C0BE079-AE47-465B-A6A7-59B500C0C1E3%7D&file=Datos_Fuente.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Solicitud!A1"
+        },
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "No Solicitud",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Fecha Solicitud",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values1_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Comercial",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values2_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Linea Negocio",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values3_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Cuenta",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values4_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Nit cliente",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values5_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Nombre Cliente",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values6_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Descripción",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values7_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Cantidad",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values8_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Precio Unit",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values9_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Vlr Total",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values10_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Plazo Pago",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values11_Value', ``, 'string') }}"
+            },
+            {
+              "column": "cia",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values12_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Fecha Factura",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values13_Value', ``, 'string') }}"
+            },
+            {
+              "column": "No Factura",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values14_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Tipo",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values15_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Estado",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values16_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Observaciones",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values17_Value', ``, 'string') }}"
+            },
+            {
+              "column": "Fecha pago",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values18_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcelTool",
+      "typeVersion": 2.1,
+      "position": [
+        1376,
+        64
+      ],
+      "id": "b9126605-75d7-42cd-97f2-9d7f719ac8ef",
+      "name": "insertar_datos",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "SLW8IoBQXioZ00J7",
+          "name": "Microsoft Excel account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "textofinal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "textofinal": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insertar_datos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4e1a7b477a878cc564967057cda196195d75f160eec0a1f56b2314e4842201a2"
+  }
+}
