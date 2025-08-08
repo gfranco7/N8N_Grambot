@@ -10,10 +10,10 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -288,
-        -176
+        -880,
+        448
       ],
-      "id": "89a0080e-f38b-4f2b-b6e9-73c32b75c139",
+      "id": "8842a8f8-0181-4db1-8244-6b6167f7bb2a",
       "name": "Telegram Trigger",
       "webhookId": "e93b9951-9d14-4e8c-8cc1-1dbe6510950f",
       "credentials": {
@@ -28,16 +28,16 @@
         "promptType": "define",
         "text": "={{ $json.text }}",
         "options": {
-          "systemMessage": "Eres un asistente conversacional amigable que ayudará al comercial a registrar solicitudes con múltiples ítems o en su defecto con un solo ítem para ser guardados en un archivo Excel.\nFlujo de Conversación:\n1. Inicialización de Nueva Solicitud\n\nLee el valor que se obtiene de la herramienta 'GetLastNoSoli' (ej: 1674)\nAsigna automáticamente el siguiente número disponible (ej: 1675) como campo constante en la columna 'No Solicitud'.\nObtén la fecha actual usando la herramienta 'Get_date' como campo constante y agregalo en la columna 'Fecha Solicitud'.\n\n2. Recolección de Campos Constantes\nSolicita una sola vez los siguientes campos que serán iguales para todos los ítems de esta solicitud:\n\nComercial (responsable del registro)\nNit cliente\nNombre cliente\nCorreo (se guarda en Observaciones)\n\n\nConfirma estos datos con el usuario antes de continuar.\n3. Recolección de Campos Variables por Ítem\nPara cada ítem, solicita siempre los siguientes campos:\n\nLínea de Negocio\nCuenta\nDescripción\nCantidad\nPrecio Unitario\nPlazo\nCia\n\n4. Guardado y Continuación\n\nDespués de recopilar cada ítem completo, guarda inmediatamente en Excel usando:\n\ninsertar_datos(\n    no_Solicitud=No Solicitud,\n    fecha_solicitud=Fecha solicitud(Current Date),\n    comercial=Comercial,\n    nit_cliente=Nit Cliente, \n    nombre_cliente=Nombre Cliente,\n    linea_negocio=Linea Negocio,\n    cuenta=Cuenta,\n    descripcion=Descripcion,\n    cantidad=Cantidad,\n    precio_unit=Precio Unit,\n    plazo_pago=Plazo Pago,\n    cia=cia,\n    observaciones=Observaciones(Correo)\n)\n\nInmediatamente después de guardar, pregunta:\n\"¿Deseas agregar otro ítem a esta misma solicitud (No. [número])?\"\n\n5. Gestión de Múltiples Ítems\n\nSi responde \"SÍ\": Vuelve al paso 3 (solo pide campos variables)\nSi responde \"NO\": Finaliza con el mensaje de éxito\n\n6. Finalización\nCuando el usuario termine de agregar ítems, responde:\n\"✅ ¡Solicitud No. [número] registrada exitosamente con [X] ítem(s)!\"\nReglas Importantes:\n\nCampos constantes se piden UNA SOLA VEZ por solicitud\nCampos variables se piden para CADA ítem\nCada ítem se guarda INMEDIATAMENTE tras recopilarlo\nMantén el mismo No. Solicitud para todos los ítems relacionados\nSi el usuario escribe \"cancelar\", termina el proceso inmediatamente\nSiempre confirma los datos importantes antes de guardar\nMantén un tono amable y profesional"
+          "systemMessage": "Eres un asistente conversacional amigable que ayudará al comercial a registrar solicitudes con múltiples ítems o uno en su defecto para ser guardados en un archivo Excel.\n\n## Flujo de Conversación:\n\n### 1. Inicialización de Nueva Solicitud\n- Usa la herramienta 'GetLastNoSoli' para obtener el último número de solicitud\n- Verifica bien el Numero de Solicitud, comprueba que sea el que te devuelve la herramienta\n- Suma 1 al valor obtenido para generar el nuevo \"No Solicitud\"\n- Usa la herramienta 'Date & Time' para obtener la fecha actual como \"Fecha Solicitud\"\n- IMPORTANTE: Estos valores se mantienen constantes para TODOS los ítems de la misma solicitud\n\n### 2. Recolección de Campos Constantes (UNA SOLA VEZ)\nSolicita los siguientes campos que serán iguales para todos los ítems:\n- **Comercial** (responsable del registro)\n- **Nit cliente** (número de identificación del cliente)\n- **Nombre Cliente** (razón social del cliente)\n- **Correo** (se guardará en el campo Observaciones)\n\n**Confirma estos datos con el usuario antes de continuar.**\n\n### 3. Recolección de Campos Variables (PARA CADA ÍTEM)\nPara cada ítem, solicita los siguientes campos:\n- **Linea Negocio**\n- **Cuenta** \n- **Descripción**\n- **Cantidad** (numérico)\n- **Precio Unit** (precio unitario, numérico)\n- **Plazo Pago** (términos de pago)\n- **cia** (compañía)\n\n### 4. Guardado Inmediato\nDespués de recopilar cada ítem completo, guarda INMEDIATAMENTE usando la función insertar_datos con estos parámetros EXACTOS:\n\ninsertar_datos(\nnit_cliente=\"[Nit cliente]\",\nnombre_cliente=\"[Nombre Cliente]\",\nlinea_negocio=\"[Linea Negocio]\",\ncuenta=\"[Cuenta]\",\ndescripcion=\"[Descripción]\",\ncantidad=\"[Cantidad]\",\nprecio_unit=\"[Precio Unit]\",\nplazo_pago=\"[Plazo Pago]\",\ncia=\"[cia]\",\nno_solicitud=\"[No Solicitud]\",\nfecha_solicitud=\"[Fecha Solicitud]\",\ncomercial=\"[Comercial]\",\nobservaciones=\"[Correo]\"\n)\n\n### 5. Continuación con Múltiples Ítems\nInmediatamente después de guardar cada ítem, pregunta:\n**\"¿Deseas agregar otro ítem a esta misma solicitud No. [número]?\"**\n\n- Si responde **\"SÍ\"**: Vuelve al paso 3 (solo pide campos variables, mantén los constantes)\n- Si responde **\"NO\"**: Finaliza la solicitud\n\n### 6. Finalización\nCuando termine de agregar ítems:\n**\"✅ ¡Solicitud No. [número] registrada exitosamente con [X] ítem(s)!\"**\n\n## Reglas Críticas:\n\n1. **CAMPOS CONSTANTES**: Se solicitan UNA SOLA VEZ por solicitud\n2. **CAMPOS VARIABLES**: Se solicitan para CADA ítem individual  \n3. **GUARDADO INMEDIATO**: Cada ítem se guarda TAN PRONTO como se complete\n4. **MISMO NÚMERO**: Todos los ítems de una solicitud comparten el mismo \"No Solicitud\"\n5. **NOMBRES EXACTOS**: Usa los nombres de parámetros EXACTAMENTE como se especifican\n6. **CONFIRMACIÓN**: Siempre confirma datos importantes antes de guardar\n7. **CANCELACIÓN**: Si el usuario escribe \"cancelar\", termina inmediatamente\n8. **VALIDACIÓN**: Antes de guardar, verifica que todos los campos requeridos estén completos\n9. **ORDEN**: Mantén el orden de los campos tal como se especifica en la función\n10. **PERSISTENCIA**: Recuerda los valores constantes durante toda la sesión de una solicitud\n\n## Formato de Respuesta:\n- Mantén un tono amable y profesional\n- Pide UN campo a la vez para mayor claridad\n- Confirma cada ítem antes de guardarlo\n- Usa emojis para hacer más amigable la interacción\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.1,
       "position": [
-        1168,
-        -160
+        576,
+        464
       ],
-      "id": "9add62cb-6d89-486b-b536-12c3048975d8",
+      "id": "5de1cf15-64ec-43d3-a939-d90d7388823b",
       "name": "AI Agent"
     },
     {
@@ -52,10 +52,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1104,
-        32
+        544,
+        688
       ],
-      "id": "8dbdefaa-ca2f-4b74-ac93-422f404b747a",
+      "id": "cf420f47-005f-47ae-8a17-6e3507d839f1",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -71,10 +71,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        1264,
-        48
+        720,
+        672
       ],
-      "id": "45081d47-063f-4003-b5ca-c79c78b94eb9",
+      "id": "98977792-5cd2-425e-b4d9-5f27cb87838a",
       "name": "Postgres Chat Memory",
       "credentials": {
         "postgres": {
@@ -94,10 +94,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1664,
-        -272
+        1072,
+        352
       ],
-      "id": "ae0a30c5-8bb5-4d9b-a538-c8afe947dd1b",
+      "id": "97460def-0ff1-42bb-9839-7ba8bad0c8ed",
       "name": "Send a text message",
       "webhookId": "a59a0f85-7f7b-4e71-b3e9-267b2e729c87",
       "credentials": {
@@ -136,10 +136,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -16,
-        -160
+        -608,
+        464
       ],
-      "id": "d3200839-d211-4c6f-9171-62a1af5db16c",
+      "id": "0f1da3e3-20ae-4430-9fb8-60373e179f82",
       "name": "Edit Fields"
     },
     {
@@ -170,10 +170,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        240,
-        -192
+        -352,
+        432
       ],
-      "id": "1655f407-610d-46b3-859a-a0120f2c0656",
+      "id": "abc4e6ff-fde4-4d60-a9db-db0f89fa6d9d",
       "name": "If"
     },
     {
@@ -199,10 +199,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        848,
-        -240
+        256,
+        384
       ],
-      "id": "1a6c1d0b-acc4-47bb-b68e-81372a0bb50b",
+      "id": "0ea36837-a68d-4dc0-8189-2a4fb3f40f3b",
       "name": "textofinal"
     },
     {
@@ -213,10 +213,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        400,
-        -48
+        -192,
+        576
       ],
-      "id": "20631956-4e51-4760-a3b1-1d333c286b1e",
+      "id": "f5055b14-824c-47aa-b3e0-df27fd69708d",
       "name": "Get a file",
       "webhookId": "13be71cc-50ef-483f-b7c7-09516a5e20aa",
       "credentials": {
@@ -235,10 +235,10 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        624,
-        -48
+        32,
+        576
       ],
-      "id": "274d50bd-a3d7-4704-aa2b-e6b93bffbd48",
+      "id": "b72e66d6-3eab-463e-a7cd-15b23480c5bb",
       "name": "Transcribe a recording",
       "credentials": {
         "openAiApi": {
@@ -270,10 +270,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        848,
-        -48
+        256,
+        576
       ],
-      "id": "5f2323e2-1863-47ed-a748-822a381caafb",
+      "id": "a3c1af27-a1c2-4794-a310-3041eec56dd2",
       "name": "Edit Fields1"
     },
     {
@@ -298,55 +298,55 @@
           "values": [
             {
               "column": "Nit cliente",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('nit_cliente', '', 'string') }}"
             },
             {
               "column": "Nombre Cliente",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values2_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('nombre_cliente', '', 'string') }}"
             },
             {
               "column": "Linea Negocio",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values3_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('linea_negocio', '', 'string') }}"
             },
             {
               "column": "Cuenta",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values4_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('cuenta', '', 'string') }}"
             },
             {
               "column": "Descripción",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values5_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('descripcion', '', 'string') }}"
             },
             {
               "column": "Cantidad",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values6_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('cantidad', '', 'string') }}"
             },
             {
               "column": "Precio Unit",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values7_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('precio_unit', '', 'string') }}"
             },
             {
               "column": "Plazo Pago",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values8_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('plazo_pago', '', 'string') }}"
             },
             {
               "column": "cia",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values9_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('cia', '', 'string') }}"
             },
             {
               "column": "No Solicitud",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values10_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('no_solicitud', '', 'string') }}"
             },
             {
               "column": "Fecha Solicitud",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values11_Value', ``, 'string') }}"
-            },
-            {
-              "column": "No Solicitud",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values12_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('fecha_solicitud', '', 'string') }}"
             },
             {
               "column": "Comercial",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values12_Value', ``, 'string') }}"
+              "fieldValue": "={{ $fromAI('comercial', '', 'string') }}"
+            },
+            {
+              "column": "Observaciones",
+              "fieldValue": "={{ $fromAI('observaciones', '', 'string') }}"
             }
           ]
         },
@@ -355,10 +355,10 @@
       "type": "n8n-nodes-base.microsoftExcelTool",
       "typeVersion": 2.1,
       "position": [
-        1232,
-        -384
+        640,
+        240
       ],
-      "id": "b9126605-75d7-42cd-97f2-9d7f719ac8ef",
+      "id": "dac92e3a-3794-41bc-b9e6-ef09717de81b",
       "name": "insertar_datos",
       "credentials": {
         "microsoftExcelOAuth2Api": {
@@ -374,10 +374,10 @@
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
       "position": [
-        1440,
-        -368
+        848,
+        256
       ],
-      "id": "b0652c7b-843a-46cf-bada-18795016171e",
+      "id": "3cd91981-b88c-427e-b50a-9f708d60c155",
       "name": "Date & Time"
     },
     {
@@ -407,10 +407,10 @@
       "type": "n8n-nodes-base.microsoftExcelTool",
       "typeVersion": 2.1,
       "position": [
-        1008,
-        -320
+        416,
+        304
       ],
-      "id": "baba96de-a4fe-4502-bb90-f25e7985c6ae",
+      "id": "a413817c-2632-422f-b02d-b7961f4e70ac",
       "name": "GetLastNoSoli",
       "credentials": {
         "microsoftExcelOAuth2Api": {
@@ -463,11 +463,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Send a text message": {
-      "main": [
-        []
       ]
     },
     "Edit Fields": {
