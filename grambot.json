@@ -11,7 +11,7 @@
       "typeVersion": 1.2,
       "position": [
         -288,
-        -128
+        -176
       ],
       "id": "89a0080e-f38b-4f2b-b6e9-73c32b75c139",
       "name": "Telegram Trigger",
@@ -24,18 +24,18 @@
       }
     },
     {
-      "parameters": { 
+      "parameters": {
         "promptType": "define",
         "text": "={{ $json.text }}",
         "options": {
-          "systemMessage": "Eres un asistente conversacional que ayudará al usuario a registrar una nueva solicitud paso a paso. Tu objetivo es guiarlo preguntando un campo a la vez y guardar cada respuesta hasta tener todos los datos.\n\nEstos son los campos que debes solicitar, en este orden:\n\n1. No Solicitud  \n2. Fecha Solicitud  \n3. Comercial  \n4. Línea de Negocio  \n5. Cuenta  \n6. NIT del cliente  \n7. Nombre del cliente  \n8. Descripción  \n9. Cantidad  \n10. Precio Unitario  \n11. Valor Total  \n12. Plazo de Pago  \n13. Compañía (cia)  \n14. Fecha de Factura  \n15. No. de Factura  \n16. Tipo  \n17. Estado  \n18. Observaciones  \n19. Fecha de pago\n\n### Instrucciones:\n\n- Pregunta **uno por uno** los campos, en orden.\n- Espera la respuesta del usuario antes de continuar al siguiente campo.\n- Asegúrate de que la respuesta tenga sentido. Si no lo parece (por ejemplo, escribe \"sí\" como nombre del cliente), pide que lo corrija.\n- Si el usuario escribe \"cancelar\", termina la conversación y no registres nada.\n- Cuando ya tengas todos los campos, llama a la herramienta:\n\ninsertar_datos(\nno_solicitud=...,\nfecha_solicitud=...,\ncomercial=...,\nlinea_negocio=...,\ncuenta=...,\nnit_cliente=...,\nnombre_cliente=...,\ndescripcion=...,\ncantidad=...,\nprecio_unit=...,\nvlr_total=...,\nplazo_pago=...,\ncia=...,\nfecha_factura=...,\nno_factura=...,\ntipo=...,\nestado=...,\nobservaciones=...,\nfecha_pago=...\n)\n\n\n- Una vez registrado, responde con:  \n  `✅ ¡Registro exitoso! Los datos fueron guardados en el Excel.`\n\nSé amable, claro, y guía al usuario con calma. Hazlo parecer una conversación natural.\n\n\n"
+          "systemMessage": "Eres un asistente conversacional amigable que ayudará al comercial a registrar solicitudes con múltiples ítems o en su defecto con un solo ítem para ser guardados en un archivo Excel.\nFlujo de Conversación:\n1. Inicialización de Nueva Solicitud\n\nLee el valor que se obtiene de la herramienta 'GetLastNoSoli' (ej: 1674)\nAsigna automáticamente el siguiente número disponible (ej: 1675) como campo constante en la columna 'No Solicitud'.\nObtén la fecha actual usando la herramienta 'Get_date' como campo constante y agregalo en la columna 'Fecha Solicitud'.\n\n2. Recolección de Campos Constantes\nSolicita una sola vez los siguientes campos que serán iguales para todos los ítems de esta solicitud:\n\nComercial (responsable del registro)\nNit cliente\nNombre cliente\nCorreo (se guarda en Observaciones)\n\n\nConfirma estos datos con el usuario antes de continuar.\n3. Recolección de Campos Variables por Ítem\nPara cada ítem, solicita siempre los siguientes campos:\n\nLínea de Negocio\nCuenta\nDescripción\nCantidad\nPrecio Unitario\nPlazo\nCia\n\n4. Guardado y Continuación\n\nDespués de recopilar cada ítem completo, guarda inmediatamente en Excel usando:\n\ninsertar_datos(\n    no_Solicitud=No Solicitud,\n    fecha_solicitud=Fecha solicitud(Current Date),\n    comercial=Comercial,\n    nit_cliente=Nit Cliente, \n    nombre_cliente=Nombre Cliente,\n    linea_negocio=Linea Negocio,\n    cuenta=Cuenta,\n    descripcion=Descripcion,\n    cantidad=Cantidad,\n    precio_unit=Precio Unit,\n    plazo_pago=Plazo Pago,\n    cia=cia,\n    observaciones=Observaciones(Correo)\n)\n\nInmediatamente después de guardar, pregunta:\n\"¿Deseas agregar otro ítem a esta misma solicitud (No. [número])?\"\n\n5. Gestión de Múltiples Ítems\n\nSi responde \"SÍ\": Vuelve al paso 3 (solo pide campos variables)\nSi responde \"NO\": Finaliza con el mensaje de éxito\n\n6. Finalización\nCuando el usuario termine de agregar ítems, responde:\n\"✅ ¡Solicitud No. [número] registrada exitosamente con [X] ítem(s)!\"\nReglas Importantes:\n\nCampos constantes se piden UNA SOLA VEZ por solicitud\nCampos variables se piden para CADA ítem\nCada ítem se guarda INMEDIATAMENTE tras recopilarlo\nMantén el mismo No. Solicitud para todos los ítems relacionados\nSi el usuario escribe \"cancelar\", termina el proceso inmediatamente\nSiempre confirma los datos importantes antes de guardar\nMantén un tono amable y profesional"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.1,
       "position": [
-        1104,
-        -144
+        1168,
+        -160
       ],
       "id": "9add62cb-6d89-486b-b536-12c3048975d8",
       "name": "AI Agent"
@@ -52,8 +52,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1056,
-        64
+        1104,
+        32
       ],
       "id": "8dbdefaa-ca2f-4b74-ac93-422f404b747a",
       "name": "OpenAI Chat Model",
@@ -71,8 +71,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        1216,
-        80
+        1264,
+        48
       ],
       "id": "45081d47-063f-4003-b5ca-c79c78b94eb9",
       "name": "Postgres Chat Memory",
@@ -94,8 +94,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1536,
-        -144
+        1664,
+        -272
       ],
       "id": "ae0a30c5-8bb5-4d9b-a538-c8afe947dd1b",
       "name": "Send a text message",
@@ -136,8 +136,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -48,
-        -144
+        -16,
+        -160
       ],
       "id": "d3200839-d211-4c6f-9171-62a1af5db16c",
       "name": "Edit Fields"
@@ -170,8 +170,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        176,
-        -144
+        240,
+        -192
       ],
       "id": "1655f407-610d-46b3-859a-a0120f2c0656",
       "name": "If"
@@ -278,47 +278,30 @@
     },
     {
       "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1744,
-        -144
-      ],
-      "id": "203db4c9-1e7e-48d2-9e04-34627dd3f145",
-      "name": "Edit Fields2"
-    },
-    {
-      "parameters": {
         "resource": "worksheet",
         "operation": "append",
         "workbook": {
           "__rl": true,
-          "value": "012SESQSLZ4AFSYR5OLNDKNJ2ZWUAMBQPD",
+          "value": "012SESQSNOH6WB5XTPBRFKGVSIE4WLN7ZY",
           "mode": "list",
-          "cachedResultName": "Datos_Fuente",
-          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B2C0BE079-AE47-465B-A6A7-59B500C0C1E3%7D&file=Datos_Fuente.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+          "cachedResultName": "Solicitud Facturacion",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
         },
         "worksheet": {
           "__rl": true,
-          "value": "{00000000-0001-0000-0000-000000000000}",
+          "value": "{00000000-0001-0000-0100-000000000000}",
           "mode": "list",
           "cachedResultName": "Solicitud",
-          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B2C0BE079-AE47-465B-A6A7-59B500C0C1E3%7D&file=Datos_Fuente.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Solicitud!A1"
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Solicitud!A1"
         },
         "fieldsUi": {
           "values": [
             {
-              "column": "No Solicitud",
+              "column": "Nit cliente",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
             },
             {
-              "column": "Fecha Solicitud",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values1_Value', ``, 'string') }}"
-            },
-            {
-              "column": "Comercial",
+              "column": "Nombre Cliente",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values2_Value', ``, 'string') }}"
             },
             {
@@ -330,60 +313,40 @@
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values4_Value', ``, 'string') }}"
             },
             {
-              "column": "Nit cliente",
+              "column": "Descripción",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values5_Value', ``, 'string') }}"
             },
             {
-              "column": "Nombre Cliente",
+              "column": "Cantidad",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values6_Value', ``, 'string') }}"
             },
             {
-              "column": "Descripción",
+              "column": "Precio Unit",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values7_Value', ``, 'string') }}"
             },
             {
-              "column": "Cantidad",
+              "column": "Plazo Pago",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values8_Value', ``, 'string') }}"
             },
             {
-              "column": "Precio Unit",
+              "column": "cia",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values9_Value', ``, 'string') }}"
             },
             {
-              "column": "Vlr Total",
+              "column": "No Solicitud",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values10_Value', ``, 'string') }}"
             },
             {
-              "column": "Plazo Pago",
+              "column": "Fecha Solicitud",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values11_Value', ``, 'string') }}"
             },
             {
-              "column": "cia",
+              "column": "No Solicitud",
               "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values12_Value', ``, 'string') }}"
             },
             {
-              "column": "Fecha Factura",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values13_Value', ``, 'string') }}"
-            },
-            {
-              "column": "No Factura",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values14_Value', ``, 'string') }}"
-            },
-            {
-              "column": "Tipo",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values15_Value', ``, 'string') }}"
-            },
-            {
-              "column": "Estado",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values16_Value', ``, 'string') }}"
-            },
-            {
-              "column": "Observaciones",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values17_Value', ``, 'string') }}"
-            },
-            {
-              "column": "Fecha pago",
-              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values18_Value', ``, 'string') }}"
+              "column": "Comercial",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values12_Value', ``, 'string') }}"
             }
           ]
         },
@@ -392,11 +355,63 @@
       "type": "n8n-nodes-base.microsoftExcelTool",
       "typeVersion": 2.1,
       "position": [
-        1376,
-        64
+        1232,
+        -384
       ],
       "id": "b9126605-75d7-42cd-97f2-9d7f719ac8ef",
       "name": "insertar_datos",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "SLW8IoBQXioZ00J7",
+          "name": "Microsoft Excel account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        -368
+      ],
+      "id": "b0652c7b-843a-46cf-bada-18795016171e",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "readRows",
+        "workbook": {
+          "__rl": true,
+          "value": "012SESQSNOH6WB5XTPBRFKGVSIE4WLN7ZY",
+          "mode": "list",
+          "cachedResultName": "Solicitud Facturacion",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0100-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Solicitud",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Solicitud!A1"
+        },
+        "useRange": true,
+        "range": "Solicitud!V2",
+        "options": {
+          "rawData": true
+        }
+      },
+      "type": "n8n-nodes-base.microsoftExcelTool",
+      "typeVersion": 2.1,
+      "position": [
+        1008,
+        -320
+      ],
+      "id": "baba96de-a4fe-4502-bb90-f25e7985c6ae",
+      "name": "GetLastNoSoli",
       "credentials": {
         "microsoftExcelOAuth2Api": {
           "id": "SLW8IoBQXioZ00J7",
@@ -452,13 +467,7 @@
     },
     "Send a text message": {
       "main": [
-        [
-          {
-            "node": "Edit Fields2",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Edit Fields": {
@@ -535,6 +544,28 @@
       ]
     },
     "insertar_datos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetLastNoSoli": {
       "ai_tool": [
         [
           {
