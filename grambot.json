@@ -2,279 +2,55 @@
   "nodes": [
     {
       "parameters": {
-        "updates": [
-          "message"
-        ],
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        -880,
-        448
-      ],
-      "id": "8842a8f8-0181-4db1-8244-6b6167f7bb2a",
-      "name": "Telegram Trigger",
-      "webhookId": "e93b9951-9d14-4e8c-8cc1-1dbe6510950f",
-      "credentials": {
-        "telegramApi": {
-          "id": "cWZMSmJP5WC4OZ9R",
-          "name": "franco"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.text }}",
+        "resource": "worksheet",
+        "operation": "readRows",
+        "workbook": {
+          "__rl": true,
+          "value": "012SESQSNOH6WB5XTPBRFKGVSIE4WLN7ZY",
+          "mode": "list",
+          "cachedResultName": "Solicitud Facturacion",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0100-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Solicitud",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Solicitud!A1"
+        },
+        "useRange": true,
+        "range": "Solicitud!V2",
         "options": {
-          "systemMessage": "Eres un asistente conversacional amigable que ayudará al comercial a registrar solicitudes con múltiples ítems o uno en su defecto para ser guardados en un archivo Excel.\n\n## Flujo de Conversación:\n\n### 1. Inicialización de Nueva Solicitud\n- Usa la herramienta 'GetLastNoSoli' para obtener el último número de solicitud\n- Verifica bien el Numero de Solicitud, comprueba que sea el que te devuelve la herramienta\n- Suma 1 al valor obtenido para generar el nuevo \"No Solicitud\"\n- Usa la herramienta 'Date & Time' para obtener la fecha actual como \"Fecha Solicitud\"\n- IMPORTANTE: Estos valores se mantienen constantes para TODOS los ítems de la misma solicitud\n\n### 2. Recolección de Campos Constantes (UNA SOLA VEZ)\nSolicita los siguientes campos que serán iguales para todos los ítems:\n- **Comercial** (responsable del registro)\n- **Nit cliente** (número de identificación del cliente)\n- **Nombre Cliente** (razón social del cliente)\n- **Correo** (se guardará en el campo Observaciones)\n\n**Confirma estos datos con el usuario antes de continuar.**\n\n### 3. Recolección de Campos Variables (PARA CADA ÍTEM)\nPara cada ítem, solicita los siguientes campos:\n- **Linea Negocio**\n- **Cuenta** \n- **Descripción**\n- **Cantidad** (numérico)\n- **Precio Unit** (precio unitario, numérico)\n- **Plazo Pago** (términos de pago)\n- **cia** (compañía)\n\n### 4. Guardado Inmediato\nDespués de recopilar cada ítem completo, guarda INMEDIATAMENTE usando la función insertar_datos con estos parámetros EXACTOS:\n\ninsertar_datos(\nnit_cliente=\"[Nit cliente]\",\nnombre_cliente=\"[Nombre Cliente]\",\nlinea_negocio=\"[Linea Negocio]\",\ncuenta=\"[Cuenta]\",\ndescripcion=\"[Descripción]\",\ncantidad=\"[Cantidad]\",\nprecio_unit=\"[Precio Unit]\",\nplazo_pago=\"[Plazo Pago]\",\ncia=\"[cia]\",\nno_solicitud=\"[No Solicitud]\",\nfecha_solicitud=\"[Fecha Solicitud]\",\ncomercial=\"[Comercial]\",\nobservaciones=\"[Correo]\"\n)\n\n### 5. Continuación con Múltiples Ítems\nInmediatamente después de guardar cada ítem, pregunta:\n**\"¿Deseas agregar otro ítem a esta misma solicitud No. [número]?\"**\n\n- Si responde **\"SÍ\"**: Vuelve al paso 3 (solo pide campos variables, mantén los constantes)\n- Si responde **\"NO\"**: Finaliza la solicitud\n\n### 6. Finalización\nCuando termine de agregar ítems:\n**\"✅ ¡Solicitud No. [número] registrada exitosamente con [X] ítem(s)!\"**\n\n## Reglas Críticas:\n\n1. **CAMPOS CONSTANTES**: Se solicitan UNA SOLA VEZ por solicitud\n2. **CAMPOS VARIABLES**: Se solicitan para CADA ítem individual  \n3. **GUARDADO INMEDIATO**: Cada ítem se guarda TAN PRONTO como se complete\n4. **MISMO NÚMERO**: Todos los ítems de una solicitud comparten el mismo \"No Solicitud\"\n5. **NOMBRES EXACTOS**: Usa los nombres de parámetros EXACTAMENTE como se especifican\n6. **CONFIRMACIÓN**: Siempre confirma datos importantes antes de guardar\n7. **CANCELACIÓN**: Si el usuario escribe \"cancelar\", termina inmediatamente\n8. **VALIDACIÓN**: Antes de guardar, verifica que todos los campos requeridos estén completos\n9. **ORDEN**: Mantén el orden de los campos tal como se especifica en la función\n10. **PERSISTENCIA**: Recuerda los valores constantes durante toda la sesión de una solicitud\n\n## Formato de Respuesta:\n- Mantén un tono amable y profesional\n- Pide UN campo a la vez para mayor claridad\n- Confirma cada ítem antes de guardarlo\n- Usa emojis para hacer más amigable la interacción\n"
+          "rawData": true
         }
       },
-      "type": "@n8n/n8n-nodes-langchain.agent",
+      "type": "n8n-nodes-base.microsoftExcelTool",
       "typeVersion": 2.1,
       "position": [
-        576,
-        464
-      ],
-      "id": "5de1cf15-64ec-43d3-a939-d90d7388823b",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gpt-4.1-mini"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        544,
-        688
-      ],
-      "id": "cf420f47-005f-47ae-8a17-6e3507d839f1",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "zfgxoBAEurymVs3q",
-          "name": "apiracines"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "contextWindowLength": 30
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
-      "typeVersion": 1.3,
-      "position": [
         720,
-        672
+        544
       ],
-      "id": "98977792-5cd2-425e-b4d9-5f27cb87838a",
-      "name": "Postgres Chat Memory",
+      "id": "a413817c-2632-422f-b02d-b7961f4e70ac",
+      "name": "GetLastNoSoli",
       "credentials": {
-        "postgres": {
-          "id": "4l1OzbBzHDyGiOzA",
-          "name": "Racines Psql"
+        "microsoftExcelOAuth2Api": {
+          "id": "SLW8IoBQXioZ00J7",
+          "name": "Microsoft Excel account 2"
         }
       }
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
-        "text": "={{ $json.output }}",
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        1072,
-        352
-      ],
-      "id": "97460def-0ff1-42bb-9839-7ba8bad0c8ed",
-      "name": "Send a text message",
-      "webhookId": "a59a0f85-7f7b-4e71-b3e9-267b2e729c87",
-      "credentials": {
-        "telegramApi": {
-          "id": "cWZMSmJP5WC4OZ9R",
-          "name": "franco"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "3971e84f-a0a5-4f2f-9bf9-7205abe9973f",
-              "name": "text",
-              "value": "={{ $json.message.text }}",
-              "type": "string"
-            },
-            {
-              "id": "b4c53cbb-d63e-444f-a36e-8cc9f6f5f79e",
-              "name": "sessionId",
-              "value": "={{ $json.message.from.id }}",
-              "type": "number"
-            },
-            {
-              "id": "c786f3a7-d056-4144-bfa7-e12e6757b521",
-              "name": "vozId",
-              "value": "={{ $json.message.voice.file_id }}",
-              "type": "string"
-            }
-          ]
-        },
         "options": {}
       },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
       "position": [
-        -608,
-        464
+        848,
+        544
       ],
-      "id": "0f1da3e3-20ae-4430-9fb8-60373e179f82",
-      "name": "Edit Fields"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "9f38fb4c-1929-4c61-ac26-c4496a71d9d7",
-              "leftValue": "={{ $json.text }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "exists",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -352,
-        432
-      ],
-      "id": "abc4e6ff-fde4-4d60-a9db-db0f89fa6d9d",
-      "name": "If"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "6aaaab03-c68f-4cf7-841a-baba440e4afb",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            },
-            {
-              "id": "212e216b-ee1e-4077-87f2-49c3bde8c6c4",
-              "name": "sessionId",
-              "value": "={{ $json.sessionId }}",
-              "type": "number"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        256,
-        384
-      ],
-      "id": "0ea36837-a68d-4dc0-8189-2a4fb3f40f3b",
-      "name": "textofinal"
-    },
-    {
-      "parameters": {
-        "resource": "file",
-        "fileId": "={{ $json.vozId }}"
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -192,
-        576
-      ],
-      "id": "f5055b14-824c-47aa-b3e0-df27fd69708d",
-      "name": "Get a file",
-      "webhookId": "13be71cc-50ef-483f-b7c7-09516a5e20aa",
-      "credentials": {
-        "telegramApi": {
-          "id": "cWZMSmJP5WC4OZ9R",
-          "name": "franco"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "resource": "audio",
-        "operation": "transcribe",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.8,
-      "position": [
-        32,
-        576
-      ],
-      "id": "b72e66d6-3eab-463e-a7cd-15b23480c5bb",
-      "name": "Transcribe a recording",
-      "credentials": {
-        "openAiApi": {
-          "id": "zfgxoBAEurymVs3q",
-          "name": "apiracines"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "7ff09b81-1ac8-428d-bfbc-e26062c00802",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            },
-            {
-              "id": "7fb22411-8143-48ac-b210-6eb9c16d08ae",
-              "name": "sessionId",
-              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-              "type": "number"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        256,
-        576
-      ],
-      "id": "a3c1af27-a1c2-4794-a310-3041eec56dd2",
-      "name": "Edit Fields1"
+      "id": "3cd91981-b88c-427e-b50a-9f708d60c155",
+      "name": "Date & Time"
     },
     {
       "parameters": {
@@ -355,8 +131,8 @@
       "type": "n8n-nodes-base.microsoftExcelTool",
       "typeVersion": 2.1,
       "position": [
-        640,
-        240
+        976,
+        544
       ],
       "id": "dac92e3a-3794-41bc-b9e6-ef09717de81b",
       "name": "insertar_datos",
@@ -369,107 +145,366 @@
     },
     {
       "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7ff09b81-1ac8-428d-bfbc-e26062c00802",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "7fb22411-8143-48ac-b210-6eb9c16d08ae",
+              "name": "sessionId",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "number"
+            }
+          ]
+        },
         "options": {}
       },
-      "type": "n8n-nodes-base.dateTimeTool",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        848,
-        256
+        240,
+        416
       ],
-      "id": "3cd91981-b88c-427e-b50a-9f708d60c155",
-      "name": "Date & Time"
+      "id": "a3c1af27-a1c2-4794-a310-3041eec56dd2",
+      "name": "Edit Fields1"
     },
     {
       "parameters": {
-        "resource": "worksheet",
-        "operation": "readRows",
-        "workbook": {
-          "__rl": true,
-          "value": "012SESQSNOH6WB5XTPBRFKGVSIE4WLN7ZY",
-          "mode": "list",
-          "cachedResultName": "Solicitud Facturacion",
-          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
-        },
-        "worksheet": {
-          "__rl": true,
-          "value": "{00000000-0001-0000-0100-000000000000}",
-          "mode": "list",
-          "cachedResultName": "Solicitud",
-          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Solicitud!A1"
-        },
-        "useRange": true,
-        "range": "Solicitud!V2",
-        "options": {
-          "rawData": true
-        }
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
       },
-      "type": "n8n-nodes-base.microsoftExcelTool",
-      "typeVersion": 2.1,
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
       "position": [
-        416,
-        304
+        16,
+        416
       ],
-      "id": "a413817c-2632-422f-b02d-b7961f4e70ac",
-      "name": "GetLastNoSoli",
+      "id": "b72e66d6-3eab-463e-a7cd-15b23480c5bb",
+      "name": "Transcribe a recording",
       "credentials": {
-        "microsoftExcelOAuth2Api": {
-          "id": "SLW8IoBQXioZ00J7",
-          "name": "Microsoft Excel account 2"
+        "openAiApi": {
+          "id": "zfgxoBAEurymVs3q",
+          "name": "apiracines"
         }
       }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.vozId }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        416
+      ],
+      "id": "f5055b14-824c-47aa-b3e0-df27fd69708d",
+      "name": "Get a file",
+      "webhookId": "13be71cc-50ef-483f-b7c7-09516a5e20aa",
+      "credentials": {
+        "telegramApi": {
+          "id": "cWZMSmJP5WC4OZ9R",
+          "name": "franco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6aaaab03-c68f-4cf7-841a-baba440e4afb",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "212e216b-ee1e-4077-87f2-49c3bde8c6c4",
+              "name": "sessionId",
+              "value": "={{ $json.sessionId }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        224
+      ],
+      "id": "0ea36837-a68d-4dc0-8189-2a4fb3f40f3b",
+      "name": "textofinal"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9f38fb4c-1929-4c61-ac26-c4496a71d9d7",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -432,
+        320
+      ],
+      "id": "abc4e6ff-fde4-4d60-a9db-db0f89fa6d9d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3971e84f-a0a5-4f2f-9bf9-7205abe9973f",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "b4c53cbb-d63e-444f-a36e-8cc9f6f5f79e",
+              "name": "sessionId",
+              "value": "={{ $json.message.from.id }}",
+              "type": "number"
+            },
+            {
+              "id": "c786f3a7-d056-4144-bfa7-e12e6757b521",
+              "name": "vozId",
+              "value": "={{ $json.message.voice.file_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -656,
+        320
+      ],
+      "id": "0f1da3e3-20ae-4430-9fb8-60373e179f82",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1312,
+        320
+      ],
+      "id": "97460def-0ff1-42bb-9839-7ba8bad0c8ed",
+      "name": "Send a text message",
+      "webhookId": "a59a0f85-7f7b-4e71-b3e9-267b2e729c87",
+      "credentials": {
+        "telegramApi": {
+          "id": "cWZMSmJP5WC4OZ9R",
+          "name": "franco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        544
+      ],
+      "id": "98977792-5cd2-425e-b4d9-5f27cb87838a",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "4l1OzbBzHDyGiOzA",
+          "name": "Racines Psql"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        544
+      ],
+      "id": "cf420f47-005f-47ae-8a17-6e3507d839f1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "zfgxoBAEurymVs3q",
+          "name": "apiracines"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -880,
+        320
+      ],
+      "id": "8842a8f8-0181-4db1-8244-6b6167f7bb2a",
+      "name": "Telegram Trigger",
+      "webhookId": "e93b9951-9d14-4e8c-8cc1-1dbe6510950f",
+      "credentials": {
+        "telegramApi": {
+          "id": "cWZMSmJP5WC4OZ9R",
+          "name": "franco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('textofinal').item.json.text }}",
+        "options": {
+          "systemMessage": "    Eres un asistente conversacional amigable que ayudará al comercial a registrar solicitudes con múltiples ítems o en su defecto con un único item para ser guardados en un archivo Excel.\n\n    ## Flujo de Conversación:\n\n    ### 1. Inicialización de Nueva Solicitud\n    - Usa la herramienta 'GetLastNoSoli' para obtener el último número de solicitud\n    - Verifica bien el Numero de Solicitud, comprueba que sea el que te devuelve la herramienta\n    - Suma 1 al valor obtenido para generar el nuevo \"No Solicitud\"\n    - Usa la herramienta 'Date & Time' para obtener la fecha actual como \"Fecha Solicitud\"\n    - IMPORTANTE: Estos valores se mantienen constantes para TODOS los ítems de la misma solicitud\n\n    ### 2. Recolección de Campos Constantes (UNA SOLA VEZ)\n    Solicita los siguientes campos que serán iguales para todos los ítems:\n    - **Comercial** (responsable del registro)\n    - **Nit cliente** (número de identificación del cliente)\n    - **Nombre Cliente** (razón social del cliente)\n    - **Correo** (se guardará en el campo Observaciones)\n\n    **Confirma estos datos con el usuario antes de continuar.**\n    **Una vez esos campos son recolectados usa la herrmaienta jsonConst para crear un json con esos datos**\n\n    ### 3. Recolección de Campos Variables (PARA CADA ÍTEM)\n    Para cada ítem, solicita los siguientes campos:\n    - **Linea Negocio**\n    - **Cuenta** \n    - **Descripción**\n    - **Cantidad** (numérico)\n    - **Precio Unit** (precio unitario, numérico)\n    - **Plazo Pago** (términos de pago)\n    - **cia** (compañía)\n\n    ### 4. Guardado Inmediato\n    Después de recopilar cada ítem completo, recuerda los datos constantes que estan en el json de la herramienta jsonConst y guarda INMEDIATAMENTE usando la función insertar_datos con estos parámetros EXACTOS:\n\n    insertar_datos(\n    nit_cliente=\"[Nit cliente]\",\n    nombre_cliente=\"[Nombre Cliente]\",\n    linea_negocio=\"[Linea Negocio]\",\n    cuenta=\"[Cuenta]\",\n    descripcion=\"[Descripción]\",\n    cantidad=\"[Cantidad]\",\n    precio_unit=\"[Precio Unit]\",\n    plazo_pago=\"[Plazo Pago]\",\n    cia=\"[cia]\",\n    no_solicitud=\"[No Solicitud]\",\n    fecha_solicitud=\"[Fecha Solicitud]\",\n    comercial=\"[Comercial]\",\n    observaciones=\"[Correo]\"\n    )\n\n    ### 5. Continuación con Múltiples Ítems\n    Inmediatamente después de guardar cada ítem, pregunta:\n    **\"¿Deseas agregar otro ítem a esta misma solicitud No. [número]?\"**\n\n    - Si responde **\"SÍ\"**: Vuelve al paso 3 (solo pide campos variables, mantén los constantes)\n    - Si responde **\"NO\"**: Finaliza la solicitud\n\n    ### 6. Finalización\n    Cuando termine de agregar ítems:\n    **\"✅ ¡Solicitud No. [número] registrada exitosamente con [X] ítem(s)!\"**\n\n    ## Reglas Críticas:\n\n    1. **CAMPOS CONSTANTES**: Se solicitan UNA SOLA VEZ por solicitud\n    2. **CAMPOS VARIABLES**: Se solicitan para CADA ítem individual  \n    3. **GUARDADO INMEDIATO**: Cada ítem se guarda TAN PRONTO como se complete\n    4. **MISMO NÚMERO**: Todos los ítems de una solicitud comparten el mismo \"No Solicitud\"\n    5. **NOMBRES EXACTOS**: Usa los nombres de parámetros EXACTAMENTE como se especifican\n    6. **CONFIRMACIÓN**: Siempre confirma datos importantes antes de guardar\n    7. **CANCELACIÓN**: Si el usuario escribe \"cancelar\", termina inmediatamente\n    8. **VALIDACIÓN**: Antes de guardar, verifica que todos los campos requeridos estén completos\n    9. **ORDEN**: Mantén el orden de los campos tal como se especifica en la función\n    10. **PERSISTENCIA**: Recuerda los valores constantes durante toda la sesión de una solicitud\n\n    ## Formato de Respuesta:\n    - Mantén un tono amable y profesional\n    - Pide UN campo a la vez para mayor claridad\n    - Confirma cada ítem antes de guardarlo\n    - Usa emojis para hacer más amigable la interacción\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        688,
+        320
+      ],
+      "id": "5de1cf15-64ec-43d3-a939-d90d7388823b",
+      "name": "AI_constante"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Este nodo recibe datos constantes y los guarda en la ejecución\nconst constants = {\n  no_solicitud: $json.no_solicitud,\n  fecha_solicitud: $json.fecha_solicitud,\n  comercial: $json.comercial,\n  nit_cliente: $json.nit_cliente,\n  nombre_cliente: $json.nombre_cliente,\n  observaciones: $json.correo\n};\n\n// Guardar en staticData (solo disponible mientras dura el flujo)\nconst data = $getWorkflowStaticData('node');\ndata.camposConstantes = constants;\n\nreturn [{ json: { message: \"Constantes guardadas correctamente\" } }];\n\n\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        1104,
+        544
+      ],
+      "id": "34d3eff9-d3ad-4cc4-909f-d1cff30bb3d4",
+      "name": "jsonConst"
     }
   ],
   "connections": {
-    "Telegram Trigger": {
+    "GetLastNoSoli": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI_constante",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI_constante",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insertar_datos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI_constante",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "AI_constante",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "AI Agent": {
+    "Transcribe a recording": {
       "main": [
         [
           {
-            "node": "Send a text message",
+            "node": "Edit Fields1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres Chat Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields": {
+    "Get a file": {
       "main": [
         [
           {
-            "node": "If",
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "textofinal": {
+      "main": [
+        [
+          {
+            "node": "AI_constante",
             "type": "main",
             "index": 0
           }
@@ -494,77 +529,66 @@
         ]
       ]
     },
-    "textofinal": {
+    "Edit Fields": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "If",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get a file": {
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI_constante",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI_constante",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
       "main": [
         [
           {
-            "node": "Transcribe a recording",
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Transcribe a recording": {
+    "AI_constante": {
       "main": [
         [
           {
-            "node": "Edit Fields1",
+            "node": "Send a text message",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Edit Fields1": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "insertar_datos": {
+    "jsonConst": {
       "ai_tool": [
         [
           {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Date & Time": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "GetLastNoSoli": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
+            "node": "AI_constante",
             "type": "ai_tool",
             "index": 0
           }

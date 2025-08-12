@@ -1,0 +1,220 @@
+{
+  "name": "Grambot Optimizado - Maestro Detalle",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "sessionId",
+              "value": "={{ $json[\"message\"][\"chat\"][\"id\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Set Session",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [],
+          "string": [
+            {
+              "value1": "={{ $json[\"camposConstantes\"] }}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      },
+      "id": "3",
+      "name": "Switch Constantes?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        750,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "prompt": "Agente para solicitar campos constantes..."
+      },
+      "id": "4",
+      "name": "Agente Campos Constantes",
+      "type": "n8n-nodes-base.aiAgent",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "camposConstantes",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5",
+      "name": "Guardar Constantes",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "prompt": "Agente para solicitar datos de un ítem..."
+      },
+      "id": "6",
+      "name": "Agente Ítems",
+      "type": "n8n-nodes-base.aiAgent",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        450
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "table": "SolicitudTable",
+        "data": "={{ $json[\"items\"] }}"
+      },
+      "id": "7",
+      "name": "Insertar en Excel",
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        450
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.sessionId }}",
+        "text": "✅ Todos los ítems han sido registrados exitosamente"
+      },
+      "id": "8",
+      "name": "Enviar Confirmación",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1750,
+        450
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Session": {
+      "main": [
+        [
+          {
+            "node": "Switch Constantes?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Constantes?": {
+      "main": [
+        [
+          {
+            "node": "Agente Campos Constantes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Ítems",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Campos Constantes": {
+      "main": [
+        [
+          {
+            "node": "Guardar Constantes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Constantes": {
+      "main": [
+        [
+          {
+            "node": "Agente Ítems",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Ítems": {
+      "main": [
+        [
+          {
+            "node": "Insertar en Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insertar en Excel": {
+      "main": [
+        [
+          {
+            "node": "Enviar Confirmación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
