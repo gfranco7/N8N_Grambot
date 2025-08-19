@@ -1,0 +1,665 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        320,
+        480
+      ],
+      "id": "18b2b22d-4450-425f-bcd6-3c4463e1ab36",
+      "name": "Respond to Chat1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM solicitud_constantes WHERE session_id = $1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        336
+      ],
+      "id": "f5801160-c76d-4b86-86d3-01f95a597669",
+      "name": "FinalizarSolicitud",
+      "credentials": {
+        "postgres": {
+          "id": "faL9CVS3eSRFhumP",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT no_solicitud, fecha_solicitud, comercial, nit_cliente, nombre_cliente, correo, estado FROM solicitud_constantes WHERE session_id = $1 ORDER BY created_at DESC LIMIT 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        288
+      ],
+      "id": "bb58ffee-f333-450d-abd0-a85432499a74",
+      "name": "LoadConstantesEstado",
+      "credentials": {
+        "postgres": {
+          "id": "faL9CVS3eSRFhumP",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO solicitud_constantes (session_id, no_solicitud, fecha_solicitud, comercial, nit_cliente, nombre_cliente, correo, estado, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) ON CONFLICT (session_id) DO UPDATE SET no_solicitud = $2, fecha_solicitud = $3, comercial = $4, nit_cliente = $5, nombre_cliente = $6, correo = $7, estado = $8, updated_at = NOW()",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.1,
+      "position": [
+        -208,
+        624
+      ],
+      "id": "56deda17-cb73-4d96-88cc-fbada251477a",
+      "name": "SaveConstantesEstado",
+      "credentials": {
+        "postgres": {
+          "id": "faL9CVS3eSRFhumP",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8c8ab3b1-d251-4fb5-b725-e6ea7b96eae5",
+              "name": "sessionId",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "a43f7598-f5a8-49c0-afbe-4d6b54950cfc",
+              "name": "chatInput",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -944,
+        352
+      ],
+      "id": "9fa6845c-bf88-47d9-96d2-6b0679f50ac4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "responseNodes"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1168,
+        352
+      ],
+      "id": "8d97ef5d-f7d7-4fb1-89ef-40e2502f3e6e",
+      "name": "When chat message received",
+      "webhookId": "90ef6ae5-7fad-4e3d-812d-97cd932da6e0"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        576
+      ],
+      "id": "6d0f4916-76bf-4026-a428-0a9e015db5b2",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "3yNRK3vIO6UzY3mB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_chat_histories102"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -592,
+        576
+      ],
+      "id": "12661587-6715-468c-97d4-df2a90980cc9",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "faL9CVS3eSRFhumP",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        576
+      ],
+      "id": "5cd1dcd5-80d1-4e3a-89be-0ab67fcbd641",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "message": "={{ $json.output }}",
+        "waitUserReply": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        832,
+        160
+      ],
+      "id": "cbda266d-75d8-4421-ae5d-29d0b78b0e3f",
+      "name": "Respond to Chat"
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "readRows",
+        "workbook": {
+          "__rl": true,
+          "value": "012SESQSNOH6WB5XTPBRFKGVSIE4WLN7ZY",
+          "mode": "list",
+          "cachedResultName": "Solicitud Facturacion",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0100-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Solicitud",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Solicitud!A1"
+        },
+        "useRange": true,
+        "range": "Solicitud!V2",
+        "options": {
+          "rawData": true
+        }
+      },
+      "type": "n8n-nodes-base.microsoftExcelTool",
+      "typeVersion": 2.1,
+      "position": [
+        -464,
+        576
+      ],
+      "id": "f7c8083a-3eb5-4524-a318-b8ba84e55b9b",
+      "name": "GetLastNoSoli",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "53d4tfDmL51BHHZy",
+          "name": "Fraco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "append",
+        "workbook": {
+          "__rl": true,
+          "value": "012SESQSNOH6WB5XTPBRFKGVSIE4WLN7ZY",
+          "mode": "list",
+          "cachedResultName": "Solicitud Facturacion",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0100-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Solicitud",
+          "cachedResultUrl": "https://campuslands-my.sharepoint.com/personal/sergio_rojas_campuslands_com/_layouts/15/Doc.aspx?sourcedoc=%7B1EAC3FAE-6FDE-4A0C-A356-48272CB6FF38%7D&file=Solicitud%20Facturacion.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Solicitud!A1"
+        },
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "No Solicitud",
+              "fieldValue": "={{ $fromAI('no_solicitud', '', 'string') }}"
+            },
+            {
+              "column": "Fecha Solicitud",
+              "fieldValue": "={{ $fromAI('fecha_solicitud', '', 'string') }}"
+            },
+            {
+              "column": "Comercial",
+              "fieldValue": "={{ $fromAI('comercial', '', 'string') }}"
+            },
+            {
+              "column": "Linea Negocio",
+              "fieldValue": "={{ $fromAI('linea_negocio', '', 'string') }}"
+            },
+            {
+              "column": "Cuenta",
+              "fieldValue": "={{ $fromAI('cuenta', '', 'string') }}"
+            },
+            {
+              "column": "Nit cliente",
+              "fieldValue": "={{ $fromAI('nit_cliente', '', 'string') }}"
+            },
+            {
+              "column": "Nombre Cliente",
+              "fieldValue": "={{ $fromAI('nombre_cliente', '', 'string') }}"
+            },
+            {
+              "column": "Descripción",
+              "fieldValue": "={{ $fromAI('descripcion', '', 'string') }}"
+            },
+            {
+              "column": "Cantidad",
+              "fieldValue": "={{ $fromAI('cantidad', '', 'string') }}"
+            },
+            {
+              "column": "Precio Unit",
+              "fieldValue": "={{ $fromAI('precio_unit', '', 'string') }}"
+            },
+            {
+              "column": "Plazo Pago",
+              "fieldValue": "={{ $fromAI('plazo_pago', '', 'string') }}"
+            },
+            {
+              "column": "cia",
+              "fieldValue": "={{ $fromAI('cia', '', 'string') }}"
+            },
+            {
+              "column": "Observaciones",
+              "fieldValue": "={{ $fromAI('observaciones', '', 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcelTool",
+      "typeVersion": 2.1,
+      "position": [
+        592,
+        368
+      ],
+      "id": "9459d823-00f1-4efc-9662-af5b06ef5a9c",
+      "name": "insertar_datos",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "53d4tfDmL51BHHZy",
+          "name": "Fraco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        336,
+        320
+      ],
+      "id": "423194ff-e72d-4e32-a0e4-80c5378dc4e4",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "3yNRK3vIO6UzY3mB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_chat_histories102"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        320
+      ],
+      "id": "d5f72ec3-722c-4801-8e05-fcf772ebc25f",
+      "name": "Postgres Chat Memory1",
+      "credentials": {
+        "postgres": {
+          "id": "faL9CVS3eSRFhumP",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.estado }}",
+                    "rightValue": "constantes_confirmadas",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "381f2d4a-ec36-420c-b3f7-8290d3067c26"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f988b91e-7cfc-49b7-beb7-9e828f982f6f",
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        112,
+        352
+      ],
+      "id": "b617a6ed-84df-4d68-b455-2d5df1370ab9",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT estado FROM solicitud_constantes WHERE session_id = $1 ORDER BY created_at DESC LIMIT 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -96,
+        352
+      ],
+      "id": "827c63cf-06ab-49c7-942b-26027d07551f",
+      "name": "Check Session State",
+      "credentials": {
+        "postgres": {
+          "id": "faL9CVS3eSRFhumP",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "options": {
+          "systemMessage": "Eres un asistente conversacional especializado en registrar ítems de facturación.\nYa tienes disponibles los **datos constantes** de la solicitud, los cuales NUNCA cambian durante esta solicitud.\nTu tarea es pedir únicamente los **campos variables de cada ítem**, confirmar con el usuario y luego guardarlos en Excel usando la herramienta `insertar_datos`.\n\n---\n\n## Flujo de Conversación:\n\n### 1. Datos Constantes\n- Los campos constantes provienen de LoadConstantesEstado y NO debes volver a pedirlos:\n  - no_solicitud\n  - fecha_solicitud\n  - comercial\n  - nit_cliente\n  - nombre_cliente\n  - correo\n\nLee estos datos usando LoadConstantesEstado al inicio de cada conversación.\n\n---\n\n### 2. Recolección de Campos Variables (para cada ÍTEM)\nSolicita de manera amigable y clara:\n- **Linea Negocio**\n- **Cuenta**\n- **Descripción**\n- **Cantidad** (número entero)\n- **Precio Unit** (valor numérico)\n- **Plazo Pago** (fecha o texto de plazo)\n- **cia**\n\nPide **un campo a la vez**.\nConfirma los datos antes de guardar.\n\n---\n\n### 3. Guardado Inmediato\nCuando tengas todos los campos de un ítem:\n1. Usa LoadConstantesEstado para obtener los datos constantes actuales.\n2. Combina los datos constantes con los campos del ítem.\n3. Llama inmediatamente a `insertar_datos` con estos parámetros EXACTOS:\n\n```\ninsertar_datos(\n  nit_cliente=\"[nit_cliente]\",\n  nombre_cliente=\"[nombre_cliente]\",\n  linea_negocio=\"[linea_negocio]\",\n  cuenta=\"[cuenta]\",\n  descripcion=\"[descripcion]\",\n  cantidad=\"[cantidad]\",\n  precio_unit=\"[precio_unit]\",\n  plazo_pago=\"[plazo_pago]\",\n  cia=\"[cia]\",\n  no_solicitud=\"[no_solicitud]\",\n  fecha_solicitud=\"[fecha_solicitud]\",\n  comercial=\"[comercial]\",\n  observaciones=\"[correo]\"\n)\n```\n\n### 4. Continuación con Ítems\n\nDespués de guardar, pregunta:\n\"¿Quieres agregar otro ítem a esta misma solicitud No. [no_solicitud]?\"\n\nSi el usuario responde \"Sí\" → vuelve a pedir solo los campos variables (no los constantes).\n\nSi responde \"NO\" → finaliza el registro usando FinalizarSolicitud.\n\n### 5. Finalización\n\nCuando el usuario termine:\n- Usa FinalizarSolicitud para limpiar el estado.\n- \"✅ Solicitud No. [no_solicitud] registrada exitosamente con [X] ítem(s)\"\n\n## Reglas Críticas\n\n- Constantes → siempre leerlos de LoadConstantesEstado, nunca volver a preguntar.\n- Variables → preguntar y confirmar en cada ítem.\n- Guardar cada ítem de inmediato → nunca acumules varios sin guardar.\n- Nombres exactos → usa los nombres de los campos tal como están en insertar_datos.\n- Validación → asegúrate de que cada campo variable esté presente antes de guardar.\n- Cancelación → si el usuario escribe \"cancelar\", usa FinalizarSolicitud y termina.\n- Tono → profesional, claro y amable; usa emojis para hacerlo más cercano."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        96
+      ],
+      "id": "62494be9-ae6e-487f-a616-0d8577529d2f",
+      "name": "next_agent"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres el agente encargado de recopilar los DATOS CONSTANTES de una nueva solicitud.\nDebes obtenerlos UNA SOLA VEZ, confirmarlos con el usuario y guardarlos usando SaveConstantesEstado.\n\n## Flujo:\n1. Obtén el número de solicitud:\n   - Usa la herramienta GetLastNoSoli → súmale 1.\n   - Usa la herramienta Date & Time → genera la fecha actual.\n   - Mantén el 'estado' como 'recopilando_constantes' hasta completar\n   - Estos valores deben mantenerse constantes.\n\n2. Solicita y confirma con el usuario los siguientes datos constantes:\n   - Comercial\n   - Nit Cliente\n   - Nombre Cliente\n   - Correo (se guardará en Observaciones)\n\n3. Confirma con el usuario todos los datos en conjunto.\n   Ejemplo: \n   \"Por favor confirma: No Solicitud=00124, Comercial=Andrés, Nit=900123456-7, \n   Nombre Cliente=Campuslands SAS, Correo=ventas@campus.com ✅ ¿Está correcto?\"\n\n4. Cuando el usuario confirme:\n   - Guarda estos valores usando SaveConstantesEstado con estado='constantes_confirmadas'.\n   - Termina tu trabajo indicando que los datos están listos.\n\n## Reglas:\n- NO guardes ni preguntes por campos variables.\n- Todos los ítems de esta solicitud deben heredar estos mismos valores.\n- Usa EXACTAMENTE estos nombres de parámetros en SaveConstantesEstado:\n  no_solicitud, fecha_solicitud, comercial, nit_cliente, nombre_cliente, correo, estado"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -592,
+        352
+      ],
+      "id": "c4e81fe1-30bf-4587-8fd6-aa8f3b3de330",
+      "name": "first_agent"
+    }
+  ],
+  "connections": {
+    "FinalizarSolicitud": {
+      "ai_tool": [
+        [
+          {
+            "node": "next_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LoadConstantesEstado": {
+      "ai_tool": [
+        [
+          {
+            "node": "next_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaveConstantesEstado": {
+      "ai_tool": [
+        [
+          {
+            "node": "first_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "first_agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "first_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "first_agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "first_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetLastNoSoli": {
+      "ai_tool": [
+        [
+          {
+            "node": "first_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insertar_datos": {
+      "ai_tool": [
+        [
+          {
+            "node": "next_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "next_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "next_agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "next_agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Chat1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Session State": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "next_agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "first_agent": {
+      "main": [
+        [
+          {
+            "node": "Check Session State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d6c3fec7e61022ab888118764dfae8af1f2995143ab80478e4f470c6e3881346"
+  }
+}

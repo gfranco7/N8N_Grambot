@@ -18,6 +18,7 @@
 
     **Confirma estos datos con el usuario antes de continuar.**
     **Una vez esos campos son recolectados usa la herrmaienta jsonConst para crear un json con esos datos**
+    **Los valores constantes siguen siendo constantes sin importar cuantos items se agreguen**
 
     ### 3. Recolección de Campos Variables (PARA CADA ÍTEM)
     Para cada ítem, solicita los siguientes campos:
@@ -49,10 +50,10 @@
     )
 
     ### 5. Continuación con Múltiples Ítems
-    Inmediatamente después de guardar cada ítem, pregunta:
+    Ten en cuenta que puede agregar hasta 100 items. Inmediatamente después de guardar cada ítem, pregunta:
     **"¿Deseas agregar otro ítem a esta misma solicitud No. [número]?"**
 
-    - Si responde **"SÍ"**: Vuelve al paso 3 (solo pide campos variables, mantén los constantes)
+    - Si responde **"SÍ"**: Vuelve al paso 3 (solo pide campos variables, *mantén los constantes*)
     - Si responde **"NO"**: Finaliza la solicitud
 
     ### 6. Finalización

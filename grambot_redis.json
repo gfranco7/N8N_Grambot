@@ -1,0 +1,107 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres el agente encargado de recopilar los DATOS CONSTANTES de una nueva solicitud.\nDebes obtenerlos UNA SOLA VEZ, confirmarlos con el usuario y guardarlos usando SetRedisState.\n\n## Flujo:\n1. Obtén el número de solicitud:\n   - Usa la herramienta GetLastNoSoli → súmale 1.\n   - Usa la herramienta Date & Time → genera la fecha actual.\n   - Mantén el 'estado' como 'recopilando_constantes' hasta completar\n\n2. Solicita y confirma con el usuario los siguientes datos constantes:\n   - Comercial\n   - Nit Cliente\n   - Nombre Cliente\n   - Correo (se guardará en Observaciones)\n\n3. Confirma con el usuario todos los datos en conjunto.\n   Ejemplo: \n   \"Por favor confirma: No Solicitud=00124, Comercial=Andrés, Nit=900123456-7, \n   Nombre Cliente=Campuslands SAS, Correo=ventas@campus.com ✅ ¿Está correcto?\"\n\n4. Cuando el usuario confirme:\n   - Guarda estos valores usando SetRedisState con estado='constantes_confirmadas'.\n   - Usa EXACTAMENTE estos parámetros: session_id, no_solicitud, fecha_solicitud, comercial, nit_cliente, nombre_cliente, correo, estado\n   - Termina tu trabajo indicando que los datos están listos."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [8, 44],
+      "id": "3a177119-5362-4873-b648-4c27b121cd5d",
+      "name": "first_agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "options": {
+          "systemMessage": "Eres un asistente conversacional especializado en registrar ítems de facturación.\nTu tarea es pedir únicamente los **campos variables de cada ítem**, confirmar con el usuario y luego guardarlos en Excel.\n\n## Flujo de Conversación:\n\n### 1. Datos Constantes\n- Los campos constantes se obtienen usando GetRedisState y NO debes volver a pedirlos:\n  - no_solicitud, fecha_solicitud, comercial, nit_cliente, nombre_cliente, correo\n\n### 2. Recolección de Campos Variables (para cada ÍTEM)\nSolicita de manera amigable:\n- **Linea Negocio**\n- **Cuenta**\n- **Descripción**\n- **Cantidad** (número entero)\n- **Precio Unit** (valor numérico)\n- **Plazo Pago**\n- **cia**\n\n### 3. Guardado Inmediato\nCuando tengas todos los campos de un ítem:\n1. Usa GetRedisState para obtener los datos constantes actuales.\n2. Combina con los campos del ítem.\n3. Llama a `insertar_datos` con los parámetros exactos.\n\n### 4. Continuación\nDespués de guardar, pregunta:\n\"¿Quieres agregar otro ítem a esta misma solicitud?\"\n\n### 5. Finalización\nCuando termine:\n- Usa ClearRedisState para limpiar el estado.\n- Mensaje de confirmación final."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [984, -208],
+      "id": "9e640480-3ec6-439e-b643-1de19f896ddc",
+      "name": "next_agent"
+    },
+    {
+      "parameters": {
+        "command": "set",
+        "key": "solicitud:{{ $fromAI('session_id', '', 'string') }}",
+        "value": "={{ JSON.stringify({\n  no_solicitud: $fromAI('no_solicitud', '', 'string'),\n  fecha_solicitud: $fromAI('fecha_solicitud', '', 'string'),\n  comercial: $fromAI('comercial', '', 'string'),\n  nit_cliente: $fromAI('nit_cliente', '', 'string'),\n  nombre_cliente: $fromAI('nombre_cliente', '', 'string'),\n  correo: $fromAI('correo', '', 'string'),\n  estado: $fromAI('estado', '', 'string')\n}) }}",
+        "expire": true,
+        "ttl": 3600,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redisTool",
+      "typeVersion": 1,
+      "position": [400, 268],
+      "id": "set-redis-state",
+      "name": "SetRedisState",
+      "credentials": {
+        "redis": {
+          "id": "YOUR_REDIS_ID",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "get",
+        "key": "solicitud:{{ $fromAI('session_id', '', 'string') }}",
+        "keyType": "automatic",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redisTool",
+      "typeVersion": 1,
+      "position": [1312, 16],
+      "id": "get-redis-state",
+      "name": "GetRedisState",
+      "credentials": {
+        "redis": {
+          "id": "YOUR_REDIS_ID",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "del",
+        "key": "solicitud:{{ $fromAI('session_id', '', 'string') }}",
+        "keyType": "automatic",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redisTool",
+      "typeVersion": 1,
+      "position": [1440, 16],
+      "id": "clear-redis-state",
+      "name": "ClearRedisState",
+      "credentials": {
+        "redis": {
+          "id": "YOUR_REDIS_ID",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "solicitud:{{ $('Edit Fields').item.json.sessionId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [500, 44],
+      "id": "check-redis-state",
+      "name": "Check Redis State",
+      "credentials": {  
+        "redis": {
+          "id": "YOUR_REDIS_ID",
+          "name": "Redis account"
+        }
+      }
+    }
+  ]
+}
